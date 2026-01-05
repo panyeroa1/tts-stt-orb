@@ -248,7 +248,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                   <span>Audio Source</span>
                   <Share2 className="w-3 h-3 text-emerald-500/50" />
                 </div>
-                <div className="grid grid-cols-2 gap-2 p-2">
+                <div className="grid grid-cols-3 gap-2 p-2">
                   <button
                     onClick={() => onAudioSourceChange?.('mic')}
                     className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-all ${
@@ -258,7 +258,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <Mic className={`w-5 h-5 ${audioSource === 'mic' ? 'text-emerald-400' : 'text-slate-500'}`} />
-                    <span className="text-[10px] font-semibold">Microphone</span>
+                    <span className="text-[10px] font-semibold text-center leading-tight">Mic Only</span>
                   </button>
                   <button
                     onClick={() => onAudioSourceChange?.('system')}
@@ -269,7 +269,21 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <Share2 className={`w-5 h-5 ${audioSource === 'system' ? 'text-emerald-400' : 'text-slate-500'}`} />
-                    <span className="text-[10px] font-semibold">System/Tab</span>
+                    <span className="text-[10px] font-semibold text-center leading-tight">System</span>
+                  </button>
+                  <button
+                    onClick={() => onAudioSourceChange?.('both')}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-all ${
+                      audioSource === 'both'
+                        ? 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30'
+                        : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-300'
+                    }`}
+                  >
+                    <div className="relative">
+                      <Mic className={`w-4 h-4 absolute -left-2 -top-1 ${audioSource === 'both' ? 'text-emerald-400' : 'text-slate-500'}`} />
+                      <Share2 className={`w-4 h-4 ${audioSource === 'both' ? 'text-emerald-400' : 'text-slate-500'}`} />
+                    </div>
+                    <span className="text-[10px] font-semibold text-center leading-tight">Both</span>
                   </button>
                 </div>
 

@@ -164,31 +164,30 @@ export function OrbitApp() {
   }, [updateDevices]);
 
   const handleAudioSourceChange = async (source: AudioSource) => {
-    if (source === 'system') {
-      try {
-        // System audio requires a user gesture. This function should be called from an onClick.
+    try {
+      // Cleanup previous system stream if any
+      if (systemStreamRef.current) {
+        systemStreamRef.current.getTracks().forEach(t => t.stop());
+        systemStreamRef.current = null;
+      }
+
+      if (source === 'system' || source === 'both') {
         const stream = await navigator.mediaDevices.getDisplayMedia({
           video: true,
           audio: true,
         });
         systemStreamRef.current = stream;
-        setAudioSource('system');
         
-        // Handle stream ending (e.g. user stops sharing)
         stream.getVideoTracks()[0].onended = () => {
           systemStreamRef.current = null;
           setAudioSource('mic');
         };
-      } catch (err) {
-        console.error("Failed to get system audio", err);
-        reportError("System audio capture failed. Falling back to microphone.");
-        setAudioSource('mic');
       }
-    } else {
-      if (systemStreamRef.current) {
-        systemStreamRef.current.getTracks().forEach(t => t.stop());
-        systemStreamRef.current = null;
-      }
+      
+      setAudioSource(source);
+    } catch (err) {
+      console.error(`Failed to set audio source: ${source}`, err);
+      reportError(`${source} audio capture failed. Falling back to microphone.`);
       setAudioSource('mic');
     }
   };
@@ -201,27 +200,6 @@ export function OrbitApp() {
     }
     return text.match(/[^.!?]+[.!?]*|[^.!?]+$/g) || [text];
   };
-
-  const shipSegment = useCallback(async (text: string) => {
-    const segment = text.trim();
-    if (!segment) return;
-    try {
-       // Append to full transcript (client-side approximation)
-      const newFull = (fullTranscriptRef.current + " " + segment).trim();
-      setFullTranscript(newFull);
-
-      const { error } = await supabase.from('transcriptions').insert({ 
-        meeting_id: meetingId, 
-        speaker_id: MY_USER_ID, 
-        transcribe_text_segment: segment,
-        full_transcription: newFull,
-        users_all: [] // Placeholder for "all listening users"
-      });
-      if (error) throw error;
-    } catch (err) {
-      reportError("Failed to send transcription", err);
-    }
-  }, [meetingId, reportError]);
 
   const playNextAudio = useCallback(async () => {
     if (isPlayingRef.current || audioQueueRef.current.length === 0) return;
@@ -351,16 +329,54 @@ export function OrbitApp() {
     }
   }, [playNextAudio, ttsProvider]);
 
+  const shipSegment = useCallback(async (text: string) => {
+    const segment = text.trim();
+    if (!segment) return;
+    try {
+      // Update UI transcript (client-side only for real-time speed)
+      const newFull = (fullTranscriptRef.current + " " + segment).trim();
+      setFullTranscript(newFull);
+      
+      // -- NEW REAL-TIME FLOW: Pipe directly to Translation/TTS Pipeline --
+      if (modeRef.current === 'speaking' || modeRef.current === 'listening') {
+        console.log(`[Pipeline] Shipping segment for real-time processing: "${segment}"`);
+        processingQueueRef.current.push({ 
+          text: segment, 
+          id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2) 
+        });
+        processNextInQueue();
+      }
+      
+      // Note: Database saving removed to maximize performance.
+    } catch (err) {
+      console.error("Failed to process segment", err);
+    }
+  }, [processNextInQueue]);
+
   // Segment-based Recording Loop (Deepgram / Whisper)
   useEffect(() => {
     if (mode === 'speaking' && (transcriptionEngine === 'deepgram' || transcriptionEngine === 'whisper')) {
       let recorder: MediaRecorder;
+      let audioCtx: AudioContext;
+      let stream: MediaStream;
       
       const startRecording = async () => {
         try {
-          let stream: MediaStream;
           if (audioSource === 'system' && systemStreamRef.current) {
             stream = systemStreamRef.current;
+          } else if (audioSource === 'both' && systemStreamRef.current) {
+            // Mix Mic + System
+            const micStream = await navigator.mediaDevices.getUserMedia({ 
+              audio: { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
+            });
+            audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const micSource = audioCtx.createMediaStreamSource(micStream);
+            const sysSource = audioCtx.createMediaStreamSource(systemStreamRef.current);
+            const destination = audioCtx.createMediaStreamDestination();
+            
+            micSource.connect(destination);
+            sysSource.connect(destination);
+            stream = destination.stream;
           } else {
             stream = await navigator.mediaDevices.getUserMedia({ 
               audio: { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
@@ -391,7 +407,6 @@ export function OrbitApp() {
               try {
                 let transcript = '';
                 if (transcriptionEngine === 'whisper') {
-                  console.log(`[Whisper HF] Sending segment...`);
                   transcript = await transcribeWithWhisper(blob);
                 }
 
@@ -404,16 +419,17 @@ export function OrbitApp() {
                 console.error(`${transcriptionEngine} send error`, e);
               }
             }
-          }, transcriptionEngine === 'whisper' ? 5000 : 2000); // Whisper might need slightly longer segments
+          }, transcriptionEngine === 'whisper' ? 5000 : 2000);
 
           return () => {
             clearInterval(interval);
             if (recorder && recorder.state !== 'inactive') recorder.stop();
-            stream.getTracks().forEach(t => t.stop());
+            if (audioCtx) audioCtx.close();
+            if (stream && audioSource !== 'system' && audioSource !== 'both') stream.getTracks().forEach(t => t.stop());
           };
         } catch (e) {
-          console.error("Eburon Pro Init Error", e);
-          setErrorMessage("Microphone access denied for Eburon Pro");
+          console.error("Transcription Init Error", e);
+          setErrorMessage("Audio access denied");
         }
       };
 
@@ -426,6 +442,7 @@ export function OrbitApp() {
   useEffect(() => {
     if (mode === 'speaking' && (transcriptionEngine === 'gemini' || transcriptionEngine === 'deepgram')) {
       let audioContext: AudioContext;
+      let mixingContext: AudioContext;
       let processor: ScriptProcessorNode;
       let stream: MediaStream;
 
@@ -462,11 +479,24 @@ export function OrbitApp() {
              );
           }
 
-          stream = (audioSource === 'system' && systemStreamRef.current) 
-            ? systemStreamRef.current 
-            : await navigator.mediaDevices.getUserMedia({ 
-                audio: { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
-              });
+          if (audioSource === 'system' && systemStreamRef.current) {
+            stream = systemStreamRef.current;
+          } else if (audioSource === 'both' && systemStreamRef.current) {
+            const micStream = await navigator.mediaDevices.getUserMedia({ 
+              audio: { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
+            });
+            mixingContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const micSource = mixingContext.createMediaStreamSource(micStream);
+            const sysSource = mixingContext.createMediaStreamSource(systemStreamRef.current);
+            const destination = mixingContext.createMediaStreamDestination();
+            micSource.connect(destination);
+            sysSource.connect(destination);
+            stream = destination.stream;
+          } else {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+              audio: { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
+            });
+          }
           
           audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
           const source = audioContext.createMediaStreamSource(stream);
@@ -504,11 +534,12 @@ export function OrbitApp() {
             if (deepgramSessionRef.current) deepgramSessionRef.current.stop();
             if (processor) processor.disconnect();
             if (audioContext) audioContext.close();
-            if (stream && audioSource !== 'system') stream.getTracks().forEach(t => t.stop());
+            if (mixingContext) mixingContext.close();
+            if (stream && audioSource !== 'system' && audioSource !== 'both') stream.getTracks().forEach(t => t.stop());
           };
         } catch (e) {
           console.error("Transcription Session Init Error", e);
-          setErrorMessage("Microphone access denied or connection failed");
+          setErrorMessage("Audio access denied or connection failed");
         }
       };
 
