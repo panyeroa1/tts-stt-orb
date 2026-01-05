@@ -15,14 +15,14 @@ const OrbitIcon = ({ size = 20 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="planetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#60666e" />
-        <stop offset="50%" stopColor="#3d4147" />
-        <stop offset="100%" stopColor="#1a1c1f" />
+        <stop offset="0%" stopColor="#d1d5db" />
+        <stop offset="50%" stopColor="#9ca3af" />
+        <stop offset="100%" stopColor="#6b7280" />
       </linearGradient>
       <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#888" stopOpacity="0.3" />
-        <stop offset="50%" stopColor="#ccc" stopOpacity="0.8" />
-        <stop offset="100%" stopColor="#888" stopOpacity="0.3" />
+        <stop offset="0%" stopColor="#e5e7eb" stopOpacity="0.5" />
+        <stop offset="50%" stopColor="#f3f4f6" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#e5e7eb" stopOpacity="0.5" />
       </linearGradient>
     </defs>
     <ellipse
