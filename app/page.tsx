@@ -99,6 +99,9 @@ export default function Page() {
           <a href="/integrations" className={styles.integrationIcon} aria-label="View integrations">
             🔗
           </a>
+          <a href="/settings" className={styles.integrationIcon} aria-label="Settings" title="Settings">
+            ⚙️
+          </a>
           <button
             className={styles.themeToggle}
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}

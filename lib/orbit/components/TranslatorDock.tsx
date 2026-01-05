@@ -445,6 +445,20 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     <Sparkles className={`w-3 h-3 ${transcriptionEngine !== 'webspeech' ? 'fill-current' : ''}`} />
                 </button>
 
+                {/* Audio Source Dropdown */}
+                <button
+                    onClick={() => setIsDeviceOpen(!isDeviceOpen)}
+                    className={`px-3 hover:bg-white/5 border-l border-white/5 flex items-center justify-center transition-colors ${
+                        isDeviceOpen ? 'bg-white/5' : ''
+                    }`}
+                    title={`Audio Source: ${audioSource === 'mic' ? 'Microphone' : audioSource === 'system' ? 'System' : 'Both'}`}
+                >
+                    <span className="text-[10px] font-bold tracking-wider mr-1 uppercase">
+                        {audioSource === 'mic' ? 'MIC' : audioSource === 'system' ? 'SYS' : 'BOTH'}
+                    </span>
+                    <Share2 className="w-3 h-3" />
+                </button>
+
                 {/* Language Trigger */}
                 <button
                     onClick={() => setIsLangOpen(!isLangOpen)}
