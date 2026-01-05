@@ -99,7 +99,13 @@ export default function Page() {
           <a href="/integrations" className={styles.integrationIcon} aria-label="View integrations">
             🔗
           </a>
-          <a href="/settings" className={styles.integrationIcon} aria-label="Settings" title="Settings">
+          <a 
+            href="/settings" 
+            className={styles.integrationIcon} 
+            aria-label="Settings" 
+            title="Settings"
+            style={{ filter: 'brightness(1.5) contrast(1.2)' }}
+          >
             ⚙️
           </a>
           <button
