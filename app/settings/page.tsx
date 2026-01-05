@@ -18,8 +18,8 @@ export default function SettingsPage() {
         </div>
 
         {/* Settings Content */}
-        <div className="bg-[#1a2333]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-          <AdminSettings onClose={() => window.history.back()} />
+        <div className="bg-[#1a2333]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden h-[700px]">
+          <AdminSettings onClose={() => window.location.assign('/')} />
         </div>
       </div>
     </div>
