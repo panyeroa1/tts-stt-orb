@@ -147,8 +147,8 @@ export function AdminSettings({ onClose }: AdminSettingsProps) {
                         : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <div className="font-semibold text-white">Gemini Live</div>
-                    <div className="text-sm text-slate-400 mt-1">Google&apos;s real-time translation</div>
+                    <div className="font-semibold text-white">Orbit Live</div>
+                    <div className="text-sm text-slate-400 mt-1">Real-time AI translation</div>
                   </button>
                   <button
                     onClick={() => setConfig({ ...config, translationModel: 'ollama-cloud' })}
@@ -206,8 +206,8 @@ export function AdminSettings({ onClose }: AdminSettingsProps) {
                         : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <div className="font-semibold text-white">Gemini TTS</div>
-                    <div className="text-sm text-slate-400 mt-1">Google&apos;s neural voice synthesis</div>
+                    <div className="font-semibold text-white">Orbit Voice</div>
+                    <div className="text-sm text-slate-400 mt-1">Neural voice synthesis</div>
                   </button>
                   <button
                     onClick={() => setConfig({ ...config, ttsProvider: 'deepgram' })}
@@ -217,8 +217,8 @@ export function AdminSettings({ onClose }: AdminSettingsProps) {
                         : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <div className="font-semibold text-white">Deepgram Aura 2</div>
-                    <div className="text-sm text-slate-400 mt-1">Multi-language, premium voices</div>
+                    <div className="font-semibold text-white">Eburon Voice</div>
+                    <div className="text-sm text-slate-400 mt-1">Multi-language premium voices</div>
                   </button>
                   <button
                     onClick={() => setConfig({ ...config, ttsProvider: 'cartesia' })}
@@ -228,8 +228,8 @@ export function AdminSettings({ onClose }: AdminSettingsProps) {
                         : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <div className="font-semibold text-white">Cartesia Sonic-3</div>
-                    <div className="text-sm text-slate-400 mt-1">Ultra-low latency, expressive voices</div>
+                    <div className="font-semibold text-white">Orbit Premium</div>
+                    <div className="text-sm text-slate-400 mt-1">Ultra-low latency expressive voices</div>
                   </button>
                 </div>
               </div>

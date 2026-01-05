@@ -302,7 +302,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${transcriptionEngine === 'gemini' ? 'bg-indigo-400' : 'bg-slate-600'}`} />
-                    <span className="text-[11px] font-medium">Eburon Live</span>
+                    <span className="text-[11px] font-medium">Orbit Live</span>
                   </button>
                   <button
                     onClick={() => onEngineChange?.('whisper')}
@@ -313,7 +313,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${transcriptionEngine === 'whisper' ? 'bg-emerald-400' : 'bg-slate-600'}`} />
-                    <span className="text-[11px] font-medium">Whisper HF</span>
+                    <span className="text-[11px] font-medium">Eburon Archive</span>
                   </button>
                   <button
                     onClick={() => onEngineChange?.('deepgram')}
@@ -324,7 +324,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${transcriptionEngine === 'deepgram' ? 'bg-blue-400' : 'bg-slate-600'}`} />
-                    <span className="text-[11px] font-medium">Deepgram</span>
+                    <span className="text-[11px] font-medium">Eburon Pro</span>
                   </button>
                   <button
                     onClick={() => onEngineChange?.('webspeech')}
@@ -335,7 +335,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${transcriptionEngine === 'webspeech' ? 'bg-slate-300' : 'bg-slate-600'}`} />
-                    <span className="text-[11px] font-medium">Web Speech</span>
+                    <span className="text-[11px] font-medium">Eburon Basic</span>
                   </button>
                 </div>
 
@@ -354,7 +354,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${ttsProvider === 'gemini' ? 'bg-indigo-400' : 'bg-slate-600'}`} />
-                    <span className="text-[11px] font-medium">Gemini</span>
+                    <span className="text-[11px] font-medium">Orbit Voice</span>
                   </button>
                   <button
                     onClick={() => onTtsProviderChange?.('deepgram')}
@@ -365,7 +365,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${ttsProvider === 'deepgram' ? 'bg-violet-400' : 'bg-slate-600'}`} />
-                    <span className="text-[11px] font-medium">Deepgram</span>
+                    <span className="text-[11px] font-medium">Eburon Voice</span>
                   </button>
                   <button
                     onClick={() => onTtsProviderChange?.('cartesia')}
@@ -376,7 +376,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     }`}
                   >
                     <div className={`w-1.5 h-1.5 rounded-full ${ttsProvider === 'cartesia' ? 'bg-pink-400' : 'bg-slate-600'}`} />
-                    <span className="text-[11px] font-medium">Cartesia</span>
+                    <span className="text-[11px] font-medium">Orbit Premium</span>
                   </button>
                 </div>
 
@@ -437,7 +437,7 @@ const TranslatorDock: React.FC<TranslatorDockProps> = ({
                     className={`px-3 hover:bg-white/5 border-l border-white/5 flex items-center justify-center transition-colors ${
                         transcriptionEngine === 'gemini' ? 'text-emerald-400' : (transcriptionEngine === 'deepgram' ? 'text-purple-400' : 'text-slate-400')
                     }`}
-                    title={`Engine: ${transcriptionEngine === 'gemini' ? 'Eburon Live' : (transcriptionEngine === 'deepgram' ? 'Eburon Pro' : 'Eburon Standard')}`}
+                    title={`Engine: ${transcriptionEngine === 'gemini' ? 'Orbit Live' : (transcriptionEngine === 'deepgram' ? 'Eburon Pro' : 'Eburon Basic')}`}
                 >
                     <span className="text-[10px] font-bold tracking-wider mr-1 uppercase">
                         {transcriptionEngine === 'gemini' ? 'LIVE' : (transcriptionEngine === 'deepgram' ? 'PRO' : 'STD')}
