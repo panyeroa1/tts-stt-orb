@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/orbit/services/supabaseClient';
+import { supabase } from '../lib/orbit/services/supabaseClient';
 import { User } from '@supabase/supabase-js';
 
 interface AuthContextType {

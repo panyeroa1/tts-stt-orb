@@ -1,24 +1,24 @@
 'use client';
 
 import React from 'react';
-import { decodePassphrase } from '@/lib/client-utils';
-import { DebugMode } from '@/lib/Debug';
-import { KeyboardShortcuts } from '@/lib/KeyboardShortcuts';
+import { decodePassphrase } from '../../../lib/client-utils';
+import { DebugMode } from '../../../lib/Debug';
+import { KeyboardShortcuts } from '../../../lib/KeyboardShortcuts';
 import toast from 'react-hot-toast';
-import { supabase } from '@/lib/orbit/services/supabaseClient';
-import { useAuth } from '@/components/AuthProvider';
-import { RecordingIndicator } from '@/lib/RecordingIndicator';
-import { ConnectionDetails } from '@/lib/types';
-import { EburonControlBar } from '@/lib/EburonControlBar';
-import { subscribeToRoom, tryAcquireSpeaker, releaseSpeaker } from '@/lib/orbit/services/roomStateService';
-import { RoomState } from '@/lib/orbit/types';
+import { supabase } from '../../../lib/orbit/services/supabaseClient';
+import { useAuth } from '../../../components/AuthProvider';
+import { RecordingIndicator } from '../../../lib/RecordingIndicator';
+import { ConnectionDetails } from '../../../lib/types';
+import { EburonControlBar } from '../../../lib/EburonControlBar';
+import { subscribeToRoom } from '../../../lib/orbit/services/roomStateService';
+import { RoomState } from '../../../lib/orbit/types';
 
 
-import { ChatPanel } from '@/lib/ChatPanel';
-import { ParticipantsPanel } from '@/lib/ParticipantsPanel';
-import { OrbitTranslatorVertical } from '@/lib/orbit/components/OrbitTranslatorVertical';
-import { LiveCaptions } from '@/lib/LiveCaptions';
-import roomStyles from '@/styles/Eburon.module.css';
+
+import { ChatPanel } from '../../../lib/ChatPanel';
+import { ParticipantsPanel } from '../../../lib/ParticipantsPanel';
+import roomStyles from '../../../styles/Eburon.module.css';
+
 import {
   LocalUserChoices,
   PreJoin,
@@ -53,8 +53,8 @@ import {
   Track,
 } from 'livekit-client';
 import { useRouter, useParams } from 'next/navigation';
-import { useSetupE2EE } from '@/lib/useSetupE2EE';
-import { useLowCPUOptimizer } from '@/lib/usePerfomanceOptimiser';
+import { useSetupE2EE } from '../../../lib/useSetupE2EE';
+import { useLowCPUOptimizer } from '../../../lib/usePerfomanceOptimiser';
 
 const CONN_DETAILS_ENDPOINT =
   process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ?? '/api/connection-details';
@@ -72,7 +72,8 @@ const ChevronLeftIcon = () => (
   </svg>
 );
 
-type SidebarPanel = 'participants' | 'agent' | 'chat' | 'settings';
+type SidebarPanel = 'participants' | 'chat' | 'settings';
+
 
 function VideoGrid({ allowedParticipantIds }: { allowedParticipantIds: Set<string> }) {
   const layoutContext = useLayoutContext();
@@ -441,7 +442,7 @@ function VideoConferenceComponent(props: {
   const { user } = useAuth();
   const [isAppMuted, setIsAppMuted] = React.useState(false);
 
-  const [isTranscriptionEnabled, setIsTranscriptionEnabled] = React.useState(false);
+
   const [roomState, setRoomState] = React.useState<RoomState>({ activeSpeaker: null, raiseHandQueue: [], lockVersion: 0 });
 
   React.useEffect(() => {
@@ -452,22 +453,8 @@ function VideoConferenceComponent(props: {
     return unsub;
   }, [roomName]);
 
-  // Auto-release speaker lock on unmount or page leave
-  React.useEffect(() => {
-    const handleUnload = () => {
-      if (isTranscriptionEnabled && roomName && user?.id) {
-        // Use a synchronous-like fetch if possible, or just rely on the fact that 
-        // releaseSpeaker is called. Note: cleanup is async but browser might kill it.
-        releaseSpeaker(roomName, user.id);
-      }
-    };
 
-    window.addEventListener('beforeunload', handleUnload);
-    return () => {
-      window.removeEventListener('beforeunload', handleUnload);
-      handleUnload();
-    };
-  }, [isTranscriptionEnabled, roomName, user?.id]);
+
 
   const layoutContext = useCreateLayoutContext();
 
@@ -701,25 +688,8 @@ function VideoConferenceComponent(props: {
     });
   }, []);
 
-  const isAgentSpeakingRef = React.useRef(false);
 
-  const updateVolumes = React.useCallback(() => {
-     const vol = isAgentSpeakingRef.current ? 0.15 : 1.0;
-     Array.from(room.remoteParticipants.values()).forEach(p => {
-        Array.from(p.trackPublications.values()).forEach(pub => {
-           if (pub.kind === Track.Kind.Audio && pub.track) {
-              pub.track.attachedElements.forEach(el => {
-                 el.volume = vol;
-              });
-           }
-        });
-     });
-  }, [room]);
 
-  const handleAgentSpeakingChange = React.useCallback((speaking: boolean) => {
-     isAgentSpeakingRef.current = speaking;
-     updateVolumes();
-  }, [updateVolumes]);
 
   const handleSidebarPanelToggle = (panel: SidebarPanel) => {
     setSidebarCollapsed((prevCollapsed) => {
@@ -758,13 +728,8 @@ function VideoConferenceComponent(props: {
             admittedIds={admittedIds}
           />
         );
-      case 'agent':
-        return (
-          <OrbitTranslatorVertical 
-            roomCode={roomName} 
-            userId={user?.id || 'guest-user'} 
-          />
-        );
+
+
       case 'chat':
         return <ChatPanel />;
       case 'settings':
@@ -787,50 +752,9 @@ function VideoConferenceComponent(props: {
     }
   };
 
-  const handleTranscriptSegment = React.useCallback(async (segment: any) => {
-    if (!roomName) return;
-    
-    try {
-        const { error } = await supabase.from('transcript_segments').insert({
-            meeting_id: roomName,
-            speaker_id: user?.id || room.localParticipant.identity,
-            source_text: segment.text,
-            source_lang: segment.language || 'auto',
-            last_segment_id: crypto.randomUUID(),
-            full_transcription: segment.text,
-        });
-        if (error) throw error;
-    } catch (err) {
-        console.error('Failed to save transcript', err);
-    }
-  }, [roomName, room.localParticipant.identity, user?.id]);
 
-  const handleTranscriptionToggle = React.useCallback(async () => {
-    if (!roomName || !user?.id) return;
 
-    if (!isTranscriptionEnabled) {
-      // Check if current speaker is still in the room
-      const currentSpeakerId = roomState?.activeSpeaker?.userId;
-      const isSpeakerInRoom = currentSpeakerId ? 
-        (Array.from(room.remoteParticipants.values()).some(p => p.identity === currentSpeakerId) || 
-         room.localParticipant.identity === currentSpeakerId) : false;
 
-      // Attempt to acquire lock
-      // If there is a speaker but they aren't in the room, force takeover
-      const shouldForce = !!(currentSpeakerId && !isSpeakerInRoom);
-      const success = await tryAcquireSpeaker(roomName, user.id, shouldForce);
-      
-      if (success) {
-        setIsTranscriptionEnabled(true);
-      } else {
-        toast.error('Someone else is currently speaking' as any);
-      }
-    } else {
-      // Release lock
-      await releaseSpeaker(roomName, user.id);
-      setIsTranscriptionEnabled(false);
-    }
-  }, [isTranscriptionEnabled, roomName, user?.id, roomState, room]);
 
   return (
     <div
@@ -863,34 +787,28 @@ function VideoConferenceComponent(props: {
           
 
 
-          {isTranscriptionEnabled && (
-            <LiveCaptions 
-              room={room}
-              enabled={isTranscriptionEnabled}
-              vadEnabled={vadEnabled}
-              broadcastEnabled={true}
-              language="auto"
-              audioSource="auto"
-              onTranscriptSegment={handleTranscriptSegment}
-            />
-          )}
+
+
 
           {/* Custom control bar */}
           <EburonControlBar 
             onParticipantsToggle={() => handleSidebarPanelToggle('participants')}
-            onAgentToggle={() => handleSidebarPanelToggle('agent')}
             onChatToggle={() => handleSidebarPanelToggle('chat')}
             onSettingsToggle={() => handleSidebarPanelToggle('settings')}
 
 
-            onTranscriptionToggle={handleTranscriptionToggle}
+
+
+
             isParticipantsOpen={!sidebarCollapsed && activeSidebarPanel === 'participants'}
-            isAgentOpen={!sidebarCollapsed && activeSidebarPanel === 'agent'}
+
+
             isChatOpen={!sidebarCollapsed && activeSidebarPanel === 'chat'}
             isSettingsOpen={!sidebarCollapsed && activeSidebarPanel === 'settings'}
 
 
-            isTranscriptionOpen={isTranscriptionEnabled}
+
+
             isAppMuted={isAppMuted}
             onAppMuteToggle={setIsAppMuted}
             roomState={roomState}

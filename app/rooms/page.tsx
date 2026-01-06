@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { generateRoomId } from '@/lib/client-utils';
+import { generateRoomId, encodePassphrase } from '../../lib/client-utils';
 import { useRouter } from 'next/navigation';
-import styles from '@/styles/Home.module.css';
+import styles from '../../styles/Home.module.css';
 
 export default function RoomsIndex() {
   const router = useRouter();

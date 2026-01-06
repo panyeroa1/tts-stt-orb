@@ -1,7 +1,7 @@
  'use client';
 
 import React, { useState } from 'react';
-import styles from '@/styles/Integrations.module.css';
+import styles from '../../styles/Integrations.module.css';
 
 const tools = [
   {

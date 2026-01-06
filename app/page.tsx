@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
-import { encodePassphrase, generateRoomId, randomString } from '@/lib/client-utils';
+import { encodePassphrase, generateRoomId, randomString } from '../lib/client-utils';
 import styles from '../styles/Home.module.css';
 
 function ControlCard() {

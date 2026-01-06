@@ -5,7 +5,8 @@ import { useLocalParticipant, useRoomContext } from '@livekit/components-react';
 import { Track, type ScreenShareCaptureOptions, type AudioCaptureOptions } from 'livekit-client';
 import toast from 'react-hot-toast';
 import styles from '../styles/Eburon.module.css';
-import { OrbitIcon } from '@/lib/orbit/components/OrbitTranslatorVertical';
+
+
 
 // Jitsi-style SVG Icons (simple, line-based)
 const MicIcon = () => (
@@ -173,19 +174,14 @@ import { RoomState } from '@/lib/orbit/types';
 interface EburonControlBarProps {
   onChatToggle?: () => void;
   onParticipantsToggle?: () => void;
-  onAgentToggle?: () => void;
   onSettingsToggle?: () => void;
 
 
-  onTranscriptionToggle?: () => void;
   audioCaptureOptions?: AudioCaptureOptions;
   isChatOpen?: boolean;
   isParticipantsOpen?: boolean;
-  isAgentOpen?: boolean;
   isSettingsOpen?: boolean;
 
-
-  isTranscriptionOpen?: boolean;
   isAppMuted?: boolean;
   onAppMuteToggle?: (muted: boolean | ((prev: boolean) => boolean)) => void;
   roomState?: RoomState;
@@ -195,19 +191,13 @@ interface EburonControlBarProps {
 export function EburonControlBar({
   onChatToggle,
   onParticipantsToggle,
-  onAgentToggle,
   onSettingsToggle,
 
-
-  onTranscriptionToggle,
   audioCaptureOptions,
   isChatOpen,
   isParticipantsOpen,
-  isAgentOpen,
   isSettingsOpen,
 
-
-  isTranscriptionOpen,
   isAppMuted = false,
   onAppMuteToggle,
   roomState,
@@ -516,8 +506,7 @@ export function EburonControlBar({
 
   const isSidebarOpen = Boolean(
     isChatOpen || 
-    isParticipantsOpen || 
-    isAgentOpen || 
+    isParticipantsOpen ||
     isSettingsOpen
   );
 
@@ -701,15 +690,8 @@ export function EburonControlBar({
           )}
 
 
-          {onAgentToggle && (
-            <button
-              className={`${styles.controlButton} ${isAgentOpen ? styles.controlButtonActive : ''}`}
-              onClick={onAgentToggle}
-              title="Translator"
-            >
-              <OrbitIcon size={20} />
-            </button>
-          )}
+
+
 
           {onSettingsToggle && (
             <button
@@ -812,18 +794,8 @@ export function EburonControlBar({
               <span className={styles.mobileGridLabel}>{isScreenSharing ? 'Stop Share' : 'Share'}</span>
             </button>
 
-            {onAgentToggle && (
-              <button 
-                className={`${styles.mobileGridItem} ${isAgentOpen ? styles.mobileGridItemActive : ''}`}
-                onClick={() => {
-                  onAgentToggle();
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                <div className={styles.mobileGridIcon}><OrbitIcon size={24} /></div>
-                <span className={styles.mobileGridLabel}>Translator</span>
-              </button>
-            )}
+
+
 
             <button 
               className={`${styles.mobileGridItem} ${isHandRaised ? styles.mobileGridItemActive : ''}`}
