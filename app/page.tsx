@@ -312,9 +312,6 @@ export default function Page() {
             More Eburon AI tools keep your workspace superior to the rest.
           </p>
         </div>
-        <button className={styles.primaryButton} onClick={() => window.location.assign('/integrations')}>
-          View integration tools
-        </button>
       </section>
       <EburonOrb 
         meetingId="landing-page" 

@@ -441,8 +441,6 @@ function VideoConferenceComponent(props: {
   const [admittedIds, setAdmittedIds] = React.useState<Set<string>>(new Set());
   const { user } = useAuth();
   const [isAppMuted, setIsAppMuted] = React.useState(false);
-  const [isTranscriptionActive, setIsTranscriptionActive] = React.useState(false);
-  const [isTranslationActive, setIsTranslationActive] = React.useState(false);
 
   const [participantAliases, setParticipantAliases] = React.useState<Record<string, string>>({});
   const [roomState, setRoomState] = React.useState<RoomState>({ activeSpeaker: null, raiseHandQueue: [], lockVersion: 0 });
@@ -825,10 +823,6 @@ function VideoConferenceComponent(props: {
           <EburonOrb 
             meetingId={roomName}
             userId={user?.id || 'anonymous'}
-            isTranscriptionActive={isTranscriptionActive}
-            isTranslationActive={isTranslationActive}
-            onToggleTranscription={() => setIsTranscriptionActive(!isTranscriptionActive)}
-            onToggleTranslation={() => setIsTranslationActive(!isTranslationActive)}
             onOpenSettings={() => setActiveSidebarPanel('settings')}
           />
         </LayoutContextProvider>

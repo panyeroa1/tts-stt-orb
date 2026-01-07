@@ -2,56 +2,33 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import styles from '@/styles/Eburon.module.css';
-import { Settings as SettingsIcon, Mic, Volume2 } from 'lucide-react';
-import { startDeepgramTranscription, DeepgramTranscriptionSession } from './orbit/services/deepgramTranscriptionService';
-import { translateText } from './orbit/services/geminiService';
-import { speakText } from './orbit/services/cartesiaService';
+import { Settings as SettingsIcon, Mic } from 'lucide-react';
 
 interface EburonOrbProps {
   meetingId: string;
   userId: string;
-  isTranscriptionActive?: boolean;
-  isTranslationActive?: boolean;
-  onToggleTranscription?: () => void;
-  onToggleTranslation?: () => void;
   onOpenSettings?: () => void;
-  targetLanguage?: string;
 }
 
 export function EburonOrb({
-  meetingId,
-  userId,
-  isTranscriptionActive,
-  isTranslationActive,
-  onToggleTranscription,
-  onToggleTranslation,
   onOpenSettings,
-  targetLanguage = 'Spanish',
 }: EburonOrbProps) {
   const orbRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [pos, setPos] = useState({ x: 20, y: 100 }); 
   const dragStart = useRef({ x: 0, y: 0 });
-  const [transcriptionText, setTranscriptionText] = useState('Waiting for audio...');
 
-  const sessionRef = useRef<DeepgramTranscriptionSession | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Visualizer and Transcription Logic
+  // Visualizer Logic
   useEffect(() => {
     let animationId: number;
 
     const startProcessing = async () => {
       try {
-        if (!isTranscriptionActive && !isTranslationActive) {
-          // If neither is active, we can still show a visualizer if desired,
-          // but for simplicity let's only start if something is active or just keep it simple.
-          // Actually, let's always start the visualizer if the component is mounted.
-        }
-
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
 
@@ -67,45 +44,6 @@ export function EburonOrb({
         processor.connect(audioContext.destination);
         processorRef.current = processor;
 
-        if (isTranscriptionActive || isTranslationActive) {
-          const session = await startDeepgramTranscription(
-            meetingId,
-            userId,
-            async (text, isFinal) => {
-              if (isFinal) {
-                setTranscriptionText(text);
-                
-                if (isTranslationActive) {
-                  try {
-                    const translated = await translateText(text, targetLanguage);
-                    setTranscriptionText(translated);
-                    await speakText(translated);
-                  } catch (err) {
-                    console.error('Translation/TTS error:', err);
-                  }
-                }
-              } else {
-                setTranscriptionText(text);
-              }
-            },
-            () => {
-              console.log('[Deepgram] Session ended');
-            }
-          );
-          sessionRef.current = session;
-
-          processor.onaudioprocess = (e) => {
-            const inputData = e.inputBuffer.getChannelData(0);
-            const pcm16 = new Int16Array(inputData.length);
-            for (let i = 0; i < inputData.length; i++) {
-              pcm16[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
-            }
-            if (sessionRef.current) {
-              sessionRef.current.sendAudio(pcm16.buffer);
-            }
-          };
-        }
-
         const dataArr = new Uint8Array(analyser.frequencyBinCount);
         const ctx = canvasRef.current?.getContext('2d');
         if (!ctx) return;
@@ -117,8 +55,7 @@ export function EburonOrb({
           ctx.clearRect(0, 0, 72, 72);
           const volume = dataArr.reduce((a, b) => a + b) / dataArr.length;
           
-          const color = isTranslationActive ? '#bd00ff' : '#43e97b';
-          ctx.strokeStyle = color;
+          ctx.strokeStyle = '#43e97b';
           ctx.lineWidth = 3;
           ctx.beginPath();
           ctx.arc(36, 36, 22 + volume / 10, 0, Math.PI * 2);
@@ -135,10 +72,6 @@ export function EburonOrb({
     return () => {
       if (animationId) cancelAnimationFrame(animationId);
       
-      if (sessionRef.current) {
-        sessionRef.current.stop();
-        sessionRef.current = null;
-      }
       if (processorRef.current) {
         processorRef.current.disconnect();
         processorRef.current = null;
@@ -152,9 +85,9 @@ export function EburonOrb({
         streamRef.current = null;
       }
     };
-  }, [isTranscriptionActive, isTranslationActive, meetingId, userId, targetLanguage]);
+  }, []);
 
-  // Sync position to CSS variables via ref to avoid React inline-style lint
+  // Sync position to CSS variables
   useEffect(() => {
     if (orbRef.current) {
       orbRef.current.style.setProperty('--orb-right', `${pos.x}px`);
@@ -188,45 +121,24 @@ export function EburonOrb({
   };
 
   return (
-    <>
+    <div 
+      ref={orbRef}
+      className={styles.orbitSystem}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+    >
+      <div className={styles.orbitRing} />
+      <div className={styles.gearBtn} onClick={(e) => { e.stopPropagation(); onOpenSettings?.(); }}>
+        <SettingsIcon className="w-4 h-4 text-white" />
+      </div>
       <div 
-        ref={orbRef}
-        className={styles.orbitSystem}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
+        className={styles.ebPlanet}
+        onClick={(e) => { e.stopPropagation(); onOpenSettings?.(); }}
       >
-        <div className={styles.orbitRing} />
-        <div className={styles.gearBtn} onClick={(e) => { e.stopPropagation(); onOpenSettings?.(); }}>
-          <SettingsIcon className="w-4 h-4 text-white" />
-        </div>
-        <div 
-          className={`${styles.ebPlanet} ${isTranscriptionActive || isTranslationActive ? styles.ebPlanetActive : ''} ${isTranslationActive ? styles.ebPlanetTranslate : ''}`}
-          onClick={(e) => { e.stopPropagation(); onOpenSettings?.(); }}
-        >
-          <canvas ref={canvasRef} width={72} height={72} className={styles.planetCanvas} />
-          {isTranslationActive ? (
-             <Volume2 className="w-7 h-7 text-white z-10" />
-          ) : (
-            <Mic className="w-7 h-7 text-white z-10" />
-          )}
-        </div>
+        <canvas ref={canvasRef} width={72} height={72} className={styles.planetCanvas} />
+        <Mic className="w-7 h-7 text-white z-10" />
       </div>
-
-      {/* Subtitle Display */}
-      <div className={styles.subtitleContainer}>
-        <div className={`
-          ${styles.subtitleContent}
-          ${isTranscriptionActive ? styles.subtitleActive : styles.subtitleInactive}
-        `}>
-          <span className={styles.subtitleMeta}>
-            {isTranslationActive ? 'Gemini Translator' : 'Orbit Model Active'}
-          </span>
-          <span className={styles.subtitleText}>
-            {transcriptionText}
-          </span>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
