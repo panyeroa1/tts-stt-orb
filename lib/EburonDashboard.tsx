@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { auth } from './firebase';
-import { signOut } from 'firebase/auth';
 import styles from '@/styles/Eburon.module.css';
 import { generateRoomId } from '@/lib/client-utils';
 
@@ -13,8 +11,6 @@ interface EburonDashboardProps {
 export function EburonDashboard({ user }: EburonDashboardProps) {
   const [sessionCode, setSessionCode] = useState('');
   const [showJoinModal, setShowJoinModal] = useState(false);
-
-  const handleLogout = () => signOut(auth);
 
   const startClass = () => {
     const roomId = generateRoomId();
@@ -33,16 +29,9 @@ export function EburonDashboard({ user }: EburonDashboardProps) {
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Dashboard</h1>
           <span className="text-sm font-bold text-white/30 uppercase tracking-widest">
-            {user?.email?.split('@')[0] || 'User'}
+            Welcome to Eburon
           </span>
         </div>
-        <button 
-          onClick={handleLogout}
-          className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-red-500 hover:bg-red-500/10 transition-colors"
-          title="Logout"
-        >
-          <span className="text-xl leading-none">&times;</span>
-        </button>
       </div>
 
       <div className={styles.bentoGrid}>

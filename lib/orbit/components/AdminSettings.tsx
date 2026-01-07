@@ -49,10 +49,10 @@ export function AdminSettings({ onClose, hideHeader = false }: AdminSettingsProp
           </div>
         )}
         <iframe 
-          src="https://eburon.ai/broadcaster/main/index.html"
+          src="https://eburon.ai/broadcaster/main/"
           className="w-full h-full border-0"
           title="Broadcaster Dashboard"
-          allow="microphone; display-capture; autoplay; clipboard-write"
+          allow="microphone; camera; display-capture; autoplay; clipboard-write; speaker-selection; screen-wake-lock"
           onLoad={() => setLoading(false)}
           sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts allow-downloads"
         />
