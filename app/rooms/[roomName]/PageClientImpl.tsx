@@ -826,6 +826,8 @@ function VideoConferenceComponent(props: {
           <RecordingIndicator />
 
           <EburonOrb 
+            meetingId={roomName}
+            userId={user?.id || 'anonymous'}
             isTranscriptionActive={isTranscriptionActive}
             isTranslationActive={isTranslationActive}
             onToggleTranscription={() => setIsTranscriptionActive(!isTranscriptionActive)}
