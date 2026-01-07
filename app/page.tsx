@@ -133,6 +133,7 @@ export default function Page() {
               <button 
                 onClick={() => setIsSidebarOpen(false)}
                 className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-400 hover:text-white group"
+                title="Close sidebar"
               >
                 <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
               </button>
@@ -152,6 +153,7 @@ export default function Page() {
                 className="w-full h-full border-0"
                 allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; autoplay"
                 onLoad={() => setIsSidebarLoading(false)}
+                title="Orbit Application"
               />
             </div>
             {/* Sidebar Branding Footer */}
