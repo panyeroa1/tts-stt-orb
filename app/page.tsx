@@ -136,7 +136,7 @@ export default function Page() {
                 </div>
               )}
               <iframe 
-                src="/orbit-app.html"
+                src="https://eburon.ai/broadcaster/main/?id=918884&pass=4405"
                 className="w-full h-full border-0"
                 allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; autoplay"
                 onLoad={() => setIsSidebarLoading(false)}
