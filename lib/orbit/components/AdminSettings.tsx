@@ -8,10 +8,17 @@ interface AdminSettingsProps {
   onClose?: () => void;
   activeTab?: string;
   hideHeader?: boolean;
+  meetingId?: string;
 }
 
-export function AdminSettings({ onClose, hideHeader = false }: AdminSettingsProps) {
+export function AdminSettings({ onClose, hideHeader = false, meetingId }: AdminSettingsProps) {
   const [loading, setLoading] = useState(true);
+
+  const handleCopyId = () => {
+    if (meetingId) {
+      navigator.clipboard.writeText(meetingId);
+    }
+  };
 
   return (
     <div className={roomStyles.sidebarPanel}>
@@ -24,7 +31,9 @@ export function AdminSettings({ onClose, hideHeader = false }: AdminSettingsProp
             </div>
             <div>
               <h2 className="text-sm font-bold tracking-tight uppercase">Room Settings</h2>
-              <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Broadcaster Control</p>
+              {meetingId && (
+                <p className="text-[9px] text-emerald-500/70 font-black uppercase tracking-[0.2em] mt-0.5">ID: {meetingId}</p>
+              )}
             </div>
           </div>
           {onClose && (
@@ -40,7 +49,28 @@ export function AdminSettings({ onClose, hideHeader = false }: AdminSettingsProp
         </div>
       )}
 
-      {/* Content - Iframe Embed */}
+      {/* Meeting ID Section */}
+      {meetingId && (
+        <div className="p-4 border-b border-white/5 bg-white/[0.01]">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-2">Meeting ID</label>
+          <div className="flex gap-2">
+            <input 
+              readOnly 
+              value={meetingId}
+              className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-emerald-400 outline-none"
+              onClick={(e) => (e.target as HTMLInputElement).select()}
+            />
+            <button 
+              onClick={handleCopyId}
+              className="px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-lg text-[10px] font-bold text-emerald-400 transition-all uppercase tracking-tighter"
+            >
+              Copy
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Content - Iframe Embed - Adjusted padding for the new section */}
       <div className="flex-1 w-full relative bg-black/40 overflow-hidden flex flex-col">
         {loading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10 bg-[#0a0a0a]">

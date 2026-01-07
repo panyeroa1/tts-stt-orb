@@ -747,6 +747,7 @@ function VideoConferenceComponent(props: {
         return (
           <AdminSettings 
             onClose={() => setActiveSidebarPanel('participants')}
+            meetingId={roomName}
           />
         );
       default:
