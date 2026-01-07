@@ -2,8 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Settings } from 'lucide-react';
+import { Settings, X, Loader2 } from 'lucide-react';
 import styles from '@/styles/Home.module.css';
+import { EburonOrb } from '@/lib/EburonOrb';
+import { useAuth } from '@/components/AuthProvider';
+import { supabase } from '@/lib/orbit/services/supabaseClient';
 
 function ControlCard() {
   const [e2ee, setE2ee] = useState(false);
@@ -45,12 +48,6 @@ function ControlCard() {
   );
 }
 
-
-
-import { EburonOrb } from '@/lib/EburonOrb';
-import { useAuth } from '@/components/AuthProvider';
-import { supabase } from '@/lib/orbit/services/supabaseClient';
-import { X, Loader2 } from 'lucide-react';
 
 export default function Page() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -107,16 +104,6 @@ export default function Page() {
 
   return (
     <main className={styles.main}>
-      <style jsx global>{`
-        @keyframes slideInRight {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        .animate-slide-in-right {
-          animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}</style>
-
       {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div className="fixed inset-0 z-[3000] flex justify-end">
@@ -124,7 +111,7 @@ export default function Page() {
             className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300" 
             onClick={() => setIsSidebarOpen(false)} 
           />
-          <div className="relative w-full max-w-[420px] h-full bg-[#030303] border-l border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col animate-slide-in-right">
+          <div className={`relative w-full max-w-[420px] h-full bg-[#030303] border-l border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col ${styles.animateSlideInRight}`}>
             <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
