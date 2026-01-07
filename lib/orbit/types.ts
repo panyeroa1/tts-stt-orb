@@ -1,5 +1,6 @@
 export type AppMode = 'idle' | 'listening' | 'speaking';
 export type Role = 'host' | 'attendee';
+export type TtsProvider = 'gemini' | 'deepgram' | 'cartesia';
 
 export interface Participant {
   user_id: string;
@@ -8,7 +9,7 @@ export interface Participant {
 }
 
 export type ListenPreference = "raw" | "translated";
-export type AudioSource = "mic" | "system";
+export type AudioSource = "mic" | "system" | "both";
 
 export type EmotionType = "neutral" | "joy" | "sadness" | "anger" | "fear" | "calm" | "excited";
 

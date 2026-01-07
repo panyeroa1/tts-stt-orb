@@ -450,6 +450,30 @@
   }
 }
 
+.integrationIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+  margin-right: 0.5rem;
+}
+
+.integrationIcon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.settingsIcon {
+  filter: brightness(1.5) contrast(1.2);
+}
+
 .loadingScreen {
   height: 100vh;
   display: flex;

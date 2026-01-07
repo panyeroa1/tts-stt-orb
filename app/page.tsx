@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
-import { encodePassphrase, generateRoomId, randomString } from '../lib/client-utils';
+import { encodePassphrase, generateRoomId, randomString } from '@/lib/client-utils';
+import { Settings } from 'lucide-react';
 import styles from '../styles/Home.module.css';
 
 function ControlCard() {
@@ -98,6 +99,14 @@ export default function Page() {
           </div>
           <a href="/integrations" className={styles.integrationIcon} aria-label="View integrations">
             🔗
+          </a>
+          <a 
+            href="/settings" 
+            className={`${styles.integrationIcon} ${styles.settingsIcon}`} 
+            aria-label="Settings" 
+            title="Settings"
+          >
+            <Settings className="w-5 h-5 text-slate-300" />
           </a>
           <button
             className={styles.themeToggle}
