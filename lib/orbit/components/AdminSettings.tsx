@@ -57,6 +57,9 @@ export function AdminSettings({ onClose, hideHeader = false, meetingId }: AdminS
             <input 
               readOnly 
               value={meetingId}
+              title="Meeting ID"
+              aria-label="Meeting ID"
+              placeholder="Meeting ID"
               className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs font-mono text-emerald-400 outline-none"
               onClick={(e) => (e.target as HTMLInputElement).select()}
             />
