@@ -49,7 +49,7 @@ export function AdminSettings({ onClose, hideHeader = false }: AdminSettingsProp
           </div>
         )}
         <iframe 
-          src="https://eburon.ai/broadcaster/main/index.html"
+          src="/orbit-app.html"
           className="w-full h-full border-0"
           title="Broadcaster Dashboard"
           allow="microphone; camera; display-capture; autoplay; clipboard-read; clipboard-write; speaker-selection; screen-wake-lock"

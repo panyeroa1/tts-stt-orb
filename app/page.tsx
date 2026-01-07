@@ -47,12 +47,20 @@ function ControlCard() {
 
 
 
+import { EburonOrb } from '@/lib/EburonOrb';
+import { useAuth } from '@/components/AuthProvider';
+import { supabase } from '@/lib/orbit/services/supabaseClient';
+import { X, Loader2 } from 'lucide-react';
+
 export default function Page() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isRecording, setIsRecording] = useState(false);
   const [recordUrl, setRecordUrl] = useState<string | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunks = useRef<Blob[]>([]);
+  const { user } = useAuth();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarLoading, setIsSidebarLoading] = useState(true);
 
   useEffect(() => {
     document.body.dataset.theme = theme;
@@ -86,10 +94,75 @@ export default function Page() {
     }
   };
 
-
+  const handleOrbSettings = async () => {
+    if (!user) {
+      try {
+        await supabase.auth.signInAnonymously();
+      } catch (err) {
+        console.error('Auto-auth failed:', err);
+      }
+    }
+    setIsSidebarOpen(true);
+  };
 
   return (
     <main className={styles.main}>
+      <style jsx global>{`
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-in-right {
+          animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
+
+      {/* Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 z-[3000] flex justify-end">
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-300" 
+            onClick={() => setIsSidebarOpen(false)} 
+          />
+          <div className="relative w-full max-w-[420px] h-full bg-[#030303] border-l border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col animate-slide-in-right">
+            <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-300">Orbital Portal</h2>
+              </div>
+              <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-xl transition-all text-slate-400 hover:text-white group"
+              >
+                <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
+            <div className="flex-1 relative bg-black/40">
+              {isSidebarLoading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#030303] z-10 transition-opacity duration-500">
+                  <div className="relative">
+                    <div className="w-12 h-12 border-2 border-emerald-500/20 rounded-full animate-ping" />
+                    <Loader2 className="w-6 h-6 text-emerald-500 animate-spin absolute inset-0 m-auto" />
+                  </div>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] animate-pulse">Initializing Interface</span>
+                </div>
+              )}
+              <iframe 
+                src="/orbit-app.html"
+                className="w-full h-full border-0"
+                allow="camera; microphone; display-capture; fullscreen; clipboard-read; clipboard-write; autoplay"
+                onLoad={() => setIsSidebarLoading(false)}
+              />
+            </div>
+            {/* Sidebar Branding Footer */}
+            <div className="p-4 bg-black/60 border-t border-white/5 flex flex-col items-center gap-1 opacity-30">
+              <span className="text-[7px] font-black tracking-[0.3em] text-slate-400 uppercase">Powered by</span>
+              <span className="text-[8px] font-black tracking-tighter text-white">EBURON AI</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section className={styles.heroLayer}>
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>
@@ -254,6 +327,11 @@ export default function Page() {
           View integration tools
         </button>
       </section>
+      <EburonOrb 
+        meetingId="landing-page" 
+        userId={user?.id || 'anonymous'} 
+        onOpenSettings={handleOrbSettings}
+      />
     </main>
   );
 }

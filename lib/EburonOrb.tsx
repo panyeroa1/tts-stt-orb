@@ -177,8 +177,14 @@ export function EburonOrb({
     setPos({ x: newX, y: newY });
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent) => {
     setIsDragging(false);
+    
+    // Detect tap: if movement is less than 5px, treat as click
+    const dist = Math.hypot(e.clientX - (dragStart.current.x + pos.x), e.clientY - (dragStart.current.y + pos.y));
+    if (dist < 5) {
+      onOpenSettings?.();
+    }
   };
 
   return (
@@ -194,7 +200,10 @@ export function EburonOrb({
         <div className={styles.gearBtn} onClick={(e) => { e.stopPropagation(); onOpenSettings?.(); }}>
           <SettingsIcon className="w-4 h-4 text-white" />
         </div>
-        <div className={`${styles.ebPlanet} ${isTranscriptionActive || isTranslationActive ? styles.ebPlanetActive : ''} ${isTranslationActive ? styles.ebPlanetTranslate : ''}`}>
+        <div 
+          className={`${styles.ebPlanet} ${isTranscriptionActive || isTranslationActive ? styles.ebPlanetActive : ''} ${isTranslationActive ? styles.ebPlanetTranslate : ''}`}
+          onClick={(e) => { e.stopPropagation(); onOpenSettings?.(); }}
+        >
           <canvas ref={canvasRef} width={72} height={72} className={styles.planetCanvas} />
           {isTranslationActive ? (
              <Volume2 className="w-7 h-7 text-white z-10" />
