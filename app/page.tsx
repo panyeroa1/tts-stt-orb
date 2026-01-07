@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Settings, X, Loader2 } from 'lucide-react';
 import styles from '@/styles/Home.module.css';
-import { EburonOrb } from '@/lib/EburonOrb';
 import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/lib/orbit/services/supabaseClient';
 
@@ -115,7 +114,9 @@ export default function Page() {
             <div className="flex items-center justify-between p-6 border-b border-white/5 bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-300">Orbital Portal</h2>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-eb-gold mb-1">
+                Broadcaster Settings
+              </h2>
               </div>
               <button 
                 onClick={() => setIsSidebarOpen(false)}
@@ -313,11 +314,6 @@ export default function Page() {
           </p>
         </div>
       </section>
-      <EburonOrb 
-        meetingId="landing-page" 
-        userId={user?.id || 'anonymous'} 
-        onOpenSettings={handleOrbSettings}
-      />
     </main>
   );
 }

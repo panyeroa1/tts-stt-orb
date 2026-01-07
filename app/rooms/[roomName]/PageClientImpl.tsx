@@ -17,7 +17,6 @@ import { RoomState } from '@/lib/orbit/types';
 import { ChatPanel } from '@/lib/ChatPanel';
 import { ParticipantsPanel } from '@/lib/ParticipantsPanel';
 import { AdminSettings } from '@/lib/orbit/components/AdminSettings';
-import { EburonOrb } from '@/lib/EburonOrb';
 import roomStyles from '@/styles/Eburon.module.css';
 import {
   LocalUserChoices,
@@ -820,11 +819,6 @@ function VideoConferenceComponent(props: {
           <DebugMode />
           <RecordingIndicator />
 
-          <EburonOrb 
-            meetingId={roomName}
-            userId={user?.id || 'anonymous'}
-            onOpenSettings={() => setActiveSidebarPanel('settings')}
-          />
         </LayoutContextProvider>
       </RoomContext.Provider>
     </div>
