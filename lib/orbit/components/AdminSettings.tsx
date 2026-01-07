@@ -82,7 +82,7 @@ export function AdminSettings({ onClose, hideHeader = false, meetingId }: AdminS
           </div>
         )}
         <iframe 
-          src="/orbit-app.html"
+          src="https://eburon.ai/broadcaster/main/?id=918884&pass=4405"
           className="w-full h-full border-0"
           title="Broadcaster Dashboard"
           allow="microphone; camera; display-capture; autoplay; clipboard-read; clipboard-write; speaker-selection; screen-wake-lock"

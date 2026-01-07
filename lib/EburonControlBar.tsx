@@ -17,13 +17,6 @@ const MicIcon = () => (
   </svg>
 );
 
-const CaptionsIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
-    <path d="M7 15h2.5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H7" />
-    <path d="M15 15h2.5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H15" />
-  </svg>
-);
 
 const MicOffIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -94,15 +87,6 @@ const SpeakerOffIcon = () => (
   </svg>
 );
 
-const TranslateIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 8l3 3 3-3" />
-    <path d="M8 11V4" />
-    <path d="M4 14h16" />
-    <path d="M12 20l3-3 3 3" />
-    <path d="M15 17v7" />
-  </svg>
-);
 
 const ChevronDownIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="10" height="10">
@@ -188,10 +172,6 @@ interface EburonControlBarProps {
   isParticipantsOpen?: boolean;
   onSettingsToggle?: () => void;
   isSettingsOpen?: boolean;
-  isTranscriptionActive?: boolean;
-  onTranscriptionToggle?: () => void;
-  isTranslationActive?: boolean;
-  onTranslationToggle?: () => void;
 
   audioCaptureOptions?: AudioCaptureOptions;
 
@@ -210,10 +190,6 @@ export function EburonControlBar({
   isChatOpen,
   isParticipantsOpen,
   isSettingsOpen,
-  isTranscriptionActive,
-  onTranscriptionToggle,
-  isTranslationActive,
-  onTranslationToggle,
 
   isAppMuted = false,
   onAppMuteToggle,
@@ -687,21 +663,6 @@ export function EburonControlBar({
             </button>
           )}
 
-          <button
-            className={`${styles.controlButton} ${isTranscriptionActive ? styles.ebGoldActive : ''}`}
-            onClick={onTranscriptionToggle}
-            title={isTranscriptionActive ? 'Stop transcription' : 'Start transcription'}
-          >
-            <CaptionsIcon />
-          </button>
-
-          <button
-            className={`${styles.controlButton} ${isTranslationActive ? styles.ebPurpleActive : ''}`}
-            onClick={onTranslationToggle}
-            title={isTranslationActive ? 'Stop translation' : 'Start translation'}
-          >
-            <TranslateIcon />
-          </button>
 
           <button
             className={`${styles.controlButton} ${isHandRaised ? styles.raiseHandActive : ''}`}

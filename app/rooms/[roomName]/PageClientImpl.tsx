@@ -817,10 +817,6 @@ function VideoConferenceComponent(props: {
             roomState={roomState}
             userId={user?.id}
             audioCaptureOptions={audioCaptureOptions}
-            onTranscriptionToggle={() => setIsTranscriptionActive(!isTranscriptionActive)}
-            isTranscriptionActive={isTranscriptionActive}
-            onTranslationToggle={() => setIsTranslationActive(!isTranslationActive)}
-            isTranslationActive={isTranslationActive}
           />
           
           <DebugMode />
